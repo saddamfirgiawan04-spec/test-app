@@ -451,7 +451,7 @@ def page_ringkasan(data):
     total_pagu = sum(m["pagu"] for m in mak)
     total_real = sum(m["real_tw1"] + m["real_tw2"] + m["real_tw3"] + m["real_tw4"] for m in mak)
     total_kontrak = sum(m["kontrak"] for m in mak if m["kontrak"] > 0)
-    pct_real = total_real / TOTAL_PAGU if TOTAL_PAGU > 0 else 0
+    pct_real = total_real / total_pagu if total_pagu > 0 else 0
 
     # Hitung KPI Pekerjaan
     total_pek = len(pekerjaan)
@@ -484,7 +484,7 @@ def page_ringkasan(data):
         st.markdown(f"""
         <div class="kpi-card">
             <div class="label">Total Pagu Bangunan</div>
-            <div class="value">{fmt_rp_short(TOTAL_PAGU)}</div>
+            <div class="value">{fmt_rp_short(total_pagu)}</div>
             <div class="sub">TA 2026 · Revisi 3 POK DIPA</div>
         </div>""", unsafe_allow_html=True)
     with c2:
@@ -502,7 +502,7 @@ def page_ringkasan(data):
             <div class="sub">Nilai terkontrak (MAK)</div>
         </div>""", unsafe_allow_html=True)
     with c4:
-        sisa = TOTAL_PAGU - total_real
+        sisa = total_pagu - total_real
         st.markdown(f"""
         <div class="kpi-card red">
             <div class="label">Sisa Anggaran</div>
