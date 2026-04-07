@@ -1,6 +1,7 @@
 """
 Dashboard Terpadu Bagian Bangunan
 Biro Umum · Kementerian Sekretariat Negara · TA 2026
+Database: Google Sheets (permanen)
 """
 
 import streamlit as st
@@ -12,6 +13,10 @@ import json
 import os
 from datetime import datetime, date
 import hashlib
+
+# Google Sheets
+import gspread
+from google.oauth2.service_account import Credentials
 
 # ─────────────────────────────────────────────
 # KONFIGURASI HALAMAN
@@ -73,12 +78,148 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
-# DATA LAYER — JSON PERSISTENCE
+# DATA LAYER — GOOGLE SHEETS + JSON FALLBACK
 # ─────────────────────────────────────────────
 DATA_FILE = "data_dashboard.json"
+SCOPES = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
+def get_gsheet_client():
+    """Buat koneksi ke Google Sheets menggunakan Streamlit Secrets."""
+    try:
+        creds_dict = dict(st.secrets["gcp_service_account"])
+        creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
+        return gspread.authorize(creds)
+    except Exception:
+        return None
+
+def get_spreadsheet():
+    """Ambil spreadsheet dashboard. Buat sheet baru jika belum ada."""
+    client = get_gsheet_client()
+    if client is None:
+        return None
+    try:
+        sheet_name = st.secrets.get("sheet_name", "Dashboard Bangunan Kemensetneg")
+        try:
+            return client.open(sheet_name)
+        except gspread.SpreadsheetNotFound:
+            # Buat spreadsheet baru otomatis
+            sp = client.create(sheet_name)
+            return sp
+    except Exception:
+        return None
+
+@st.cache_data(ttl=30)  # Cache 30 detik agar tidak terlalu sering baca Sheets
+def load_sheet_data(sheet_tab):
+    """Baca data dari satu tab Google Sheets, return list of dicts."""
+    sp = get_spreadsheet()
+    if sp is None:
+        return None
+    try:
+        ws = sp.worksheet(sheet_tab)
+        records = ws.get_all_records()
+        return records
+    except gspread.WorksheetNotFound:
+        return []
+    except Exception:
+        return None
+
+def save_sheet_data(sheet_tab, headers, rows_of_dicts):
+    """Tulis ulang seluruh tab dengan data baru."""
+    sp = get_spreadsheet()
+    if sp is None:
+        return False
+    try:
+        try:
+            ws = sp.worksheet(sheet_tab)
+            ws.clear()
+        except gspread.WorksheetNotFound:
+            ws = sp.add_worksheet(title=sheet_tab, rows=500, cols=30)
+
+        if not rows_of_dicts:
+            ws.update([headers])
+            return True
+
+        values = [headers]
+        for row in rows_of_dicts:
+            values.append([str(row.get(h, "")) for h in headers])
+        ws.update(values)
+        # Cache harus di-invalidate setelah save
+        load_sheet_data.clear()
+        return True
+    except Exception as e:
+        st.error(f"Gagal menyimpan ke Google Sheets: {e}")
+        return False
+
+# ── Header MAK & PEKERJAAN di Google Sheets ──
+MAK_HEADERS = ["no","kro","uraian","pagu","penawaran","kontrak",
+               "real_tw1","real_tw2","real_tw3","real_tw4","status","keterangan"]
+PEK_HEADERS = ["no","klp","no_sib","nama","kat","pelaksana","nilai","no_adm","tgl_adm",
+               "ceklist","upload_draft","ttd_pengawas","ttd_kasubbag","upload_final",
+               "status","keterangan","pic"]
+META_HEADERS = ["key","value"]
+USER_HEADERS = ["username","password","role","nama"]
+
+def parse_int(val):
+    try: return int(float(str(val).replace(",","")))
+    except: return 0
+
+def sheets_to_mak(records):
+    result = []
+    for r in records:
+        result.append({
+            "no": parse_int(r.get("no",0)),
+            "kro": str(r.get("kro","")),
+            "uraian": str(r.get("uraian","")),
+            "pagu": parse_int(r.get("pagu",0)),
+            "penawaran": parse_int(r.get("penawaran",0)),
+            "kontrak": parse_int(r.get("kontrak",0)),
+            "real_tw1": parse_int(r.get("real_tw1",0)),
+            "real_tw2": parse_int(r.get("real_tw2",0)),
+            "real_tw3": parse_int(r.get("real_tw3",0)),
+            "real_tw4": parse_int(r.get("real_tw4",0)),
+            "status": str(r.get("status","")),
+            "keterangan": str(r.get("keterangan","")),
+        })
+    return result
+
+def sheets_to_pekerjaan(records):
+    result = []
+    for r in records:
+        result.append({
+            "no": parse_int(r.get("no",0)),
+            "klp": str(r.get("klp","")),
+            "no_sib": str(r.get("no_sib","")),
+            "nama": str(r.get("nama","")),
+            "kat": str(r.get("kat","")),
+            "pelaksana": str(r.get("pelaksana","")),
+            "nilai": parse_int(r.get("nilai",0)),
+            "no_adm": str(r.get("no_adm","")),
+            "tgl_adm": str(r.get("tgl_adm","")),
+            "ceklist": parse_int(r.get("ceklist",0)),
+            "upload_draft": parse_int(r.get("upload_draft",0)),
+            "ttd_pengawas": parse_int(r.get("ttd_pengawas",0)),
+            "ttd_kasubbag": parse_int(r.get("ttd_kasubbag",0)),
+            "upload_final": parse_int(r.get("upload_final",0)),
+            "status": str(r.get("status","")),
+            "keterangan": str(r.get("keterangan","")),
+            "pic": str(r.get("pic","")),
+        })
+    return result
+
+def sheets_to_users(records):
+    result = {}
+    for r in records:
+        uname = str(r.get("username",""))
+        if uname:
+            result[uname] = {
+                "password": str(r.get("password","")),
+                "role": str(r.get("role","Viewer")),
+                "nama": str(r.get("nama",uname)),
+            }
+    return result if result else None
 
 DEFAULT_USERS = {
     "admin": {"password": hash_password("bangunan2026"), "role": "Admin", "nama": "Administrator"},
@@ -134,22 +275,102 @@ ANGGARAN_KRO = {
 }
 TOTAL_PAGU = 87900383600
 
+def _use_sheets():
+    """True jika konfigurasi Google Sheets tersedia di Streamlit Secrets."""
+    return "gcp_service_account" in st.secrets
+
 def load_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {
-        "users": DEFAULT_USERS,
-        "mak": DEFAULT_MAK,
-        "pekerjaan": DEFAULT_PEKERJAAN,
-        "last_update": datetime.now().isoformat(),
-        "update_by": "Sistem",
-    }
+    """
+    Load data dari Google Sheets (jika tersedia) atau fallback ke JSON lokal.
+    """
+    if _use_sheets():
+        mak_records    = load_sheet_data("MAK")
+        pek_records    = load_sheet_data("PEKERJAAN")
+        meta_records   = load_sheet_data("META")
+        user_records   = load_sheet_data("USERS")
+
+        mak        = sheets_to_mak(mak_records)        if mak_records        else DEFAULT_MAK
+        pekerjaan  = sheets_to_pekerjaan(pek_records)  if pek_records        else DEFAULT_PEKERJAAN
+        users      = sheets_to_users(user_records)     if user_records       else DEFAULT_USERS
+
+        last_update = "–"
+        update_by   = "Sistem"
+        if meta_records:
+            meta_dict = {r["key"]: r["value"] for r in meta_records if "key" in r}
+            last_update = meta_dict.get("last_update", "–")
+            update_by   = meta_dict.get("update_by",   "Sistem")
+
+        # Jika Sheets masih kosong (baru pertama kali), isi dengan data default
+        if not mak:
+            mak = DEFAULT_MAK
+            _init_sheets_with_defaults()
+        if not pekerjaan:
+            pekerjaan = DEFAULT_PEKERJAAN
+
+        return {
+            "users": users,
+            "mak": mak,
+            "pekerjaan": pekerjaan,
+            "last_update": last_update,
+            "update_by": update_by,
+            "_source": "sheets",
+        }
+    else:
+        # Fallback: baca dari JSON lokal
+        if os.path.exists(DATA_FILE):
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                d = json.load(f)
+                d["_source"] = "local"
+                return d
+        return {
+            "users": DEFAULT_USERS,
+            "mak": DEFAULT_MAK,
+            "pekerjaan": DEFAULT_PEKERJAAN,
+            "last_update": datetime.now().isoformat(),
+            "update_by": "Sistem",
+            "_source": "local",
+        }
+
+def _init_sheets_with_defaults():
+    """Isi Google Sheets dengan data default saat pertama kali dijalankan."""
+    save_sheet_data("MAK", MAK_HEADERS, DEFAULT_MAK)
+    save_sheet_data("PEKERJAAN", PEK_HEADERS, DEFAULT_PEKERJAAN)
+    # Buat sheet USERS dari DEFAULT_USERS
+    user_rows = [{"username": k, "password": v["password"],
+                  "role": v["role"], "nama": v["nama"]}
+                 for k, v in DEFAULT_USERS.items()]
+    save_sheet_data("USERS", USER_HEADERS, user_rows)
+    save_sheet_data("META", META_HEADERS, [
+        {"key": "last_update", "value": datetime.now().isoformat()},
+        {"key": "update_by",   "value": "Sistem"},
+    ])
 
 def save_data(data):
-    data["last_update"] = datetime.now().isoformat()
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    """
+    Simpan data ke Google Sheets (jika tersedia) atau fallback ke JSON lokal.
+    """
+    now_str   = datetime.now().isoformat()
+    update_by = data.get("update_by", "Sistem")
+
+    if _use_sheets():
+        save_sheet_data("MAK",       MAK_HEADERS,  data["mak"])
+        save_sheet_data("PEKERJAAN", PEK_HEADERS,  data["pekerjaan"])
+        # Update META
+        save_sheet_data("META", META_HEADERS, [
+            {"key": "last_update", "value": now_str},
+            {"key": "update_by",   "value": update_by},
+        ])
+        # Simpan users jika ada perubahan
+        if "users" in data:
+            user_rows = [{"username": k, "password": v["password"],
+                          "role": v["role"], "nama": v["nama"]}
+                         for k, v in data["users"].items()]
+            save_sheet_data("USERS", USER_HEADERS, user_rows)
+    else:
+        # Fallback ke JSON lokal
+        data["last_update"] = now_str
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
 
 # ─────────────────────────────────────────────
 # HELPER FUNCTIONS
@@ -864,6 +1085,15 @@ def main():
             upd_str = "-"
         st.markdown(f"<small>Update terakhir:<br>{upd_str}</small>", unsafe_allow_html=True)
         st.markdown(f"<small>Oleh: {data.get('update_by', '-')}</small>", unsafe_allow_html=True)
+
+        st.markdown("---")
+        # Indikator sumber data
+        source = data.get("_source", "local")
+        if source == "sheets":
+            st.markdown("<small>💾 Database: <b>Google Sheets</b> ✅</small>", unsafe_allow_html=True)
+        else:
+            st.markdown("<small>💾 Database: <b>Lokal</b> ⚠️<br>Tambahkan Secrets untuk Google Sheets</small>",
+                        unsafe_allow_html=True)
 
         st.markdown("---")
         if st.button("🚪 Keluar", use_container_width=True):
