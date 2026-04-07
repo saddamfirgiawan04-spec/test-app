@@ -557,8 +557,10 @@ def page_ringkasan(data):
             kro = m["kro"]
             if kro not in kro_data:
                 kro_data[kro] = {"pagu": 0, "real": 0}
-            kro_data[kro]["pagu"] += m["pagu"]
             kro_data[kro]["real"] += m["real_tw1"] + m["real_tw2"] + m["real_tw3"] + m["real_tw4"]
+        # Gunakan ANGGARAN_KRO untuk pagu (konsisten dengan tabel, sudah termasuk Rutin)
+        for kro in kro_data:
+            kro_data[kro]["pagu"] = ANGGARAN_KRO.get(kro, {}).get("pagu", 0)
 
         df_kro = pd.DataFrame([
             {"KRO": k, "Pagu (M)": v["pagu"]/1e9, "Realisasi (M)": v["real"]/1e9,
