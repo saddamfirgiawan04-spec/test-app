@@ -995,7 +995,7 @@ def page_input_pekerjaan(data):
             data["update_by"] = st.session_state.get("nama", "Staf")
             save_data(data)
             st.success("✅ Status pekerjaan berhasil diperbarui!")
-               st.rerun()
+            st.rerun()
 
     with tab2:
         st.markdown("**Tambah Pekerjaan Baru**")
