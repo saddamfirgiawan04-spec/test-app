@@ -1,6 +1,6 @@
 """
 Dashboard Terpadu Bagian Bangunan
-Biro Umum Â· Kementerian Sekretariat Negara Â· TA 2026
+Biro Umum · Kementerian Sekretariat Negara · TA 2026
 Database: Google Sheets (permanen)
 """
 
@@ -18,19 +18,19 @@ import hashlib
 import gspread
 from google.oauth2.service_account import Credentials
 
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 # KONFIGURASI HALAMAN
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 st.set_page_config(
     page_title="Dashboard Bangunan Kemensetneg",
-    page_icon="ðï¸",
+    page_icon="🏛️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 # CSS KUSTOM
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 st.markdown("""
 <style>
     /* Header utama */
@@ -77,9 +77,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# âââââââââââââââââââââââââââââââââââââââââââââ
-# DATA LAYER â GOOGLE SHEETS + JSON FALLBACK
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
+# DATA LAYER — GOOGLE SHEETS + JSON FALLBACK
+# ─────────────────────────────────────────────
 DATA_FILE = "data_dashboard.json"
 SCOPES = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
@@ -153,7 +153,7 @@ def save_sheet_data(sheet_tab, headers, rows_of_dicts):
         st.error(f"Gagal menyimpan ke Google Sheets: {e}")
         return False
 
-# ââ Header MAK & PEKERJAAN di Google Sheets ââ
+# ── Header MAK & PEKERJAAN di Google Sheets ──
 MAK_HEADERS = ["no","kro","uraian","pagu","penawaran","kontrak",
                "real_tw1","real_tw2","real_tw3","real_tw4","status","keterangan"]
 PEK_HEADERS = ["no","klp","no_sib","nama","kat","pelaksana","nilai","no_adm","tgl_adm",
@@ -229,28 +229,28 @@ DEFAULT_USERS = {
 
 # Data anggaran default (dari Excel)
 DEFAULT_MAK = [
-    {"no":1,"kro":"051","uraian":"Pemeliharaan Gedung Hanggar (Skadron 45 & VVIP) Halim","pagu":1223284000,"penawaran":51542000,"kontrak":47348000,"real_tw1":47084000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Proses Bayar","keterangan":""},
-    {"no":2,"kro":"051","uraian":"Peralatan ME Hanggar Pesawat Kepresidenan RI Halim","pagu":1519468000,"penawaran":734565000,"kontrak":734565000,"real_tw1":718678003,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Proses Bayar","keterangan":""},
-    {"no":3,"kro":"052","uraian":"Pengadaan/Penggantian Alat-Alat Listrik Rumah Negara","pagu":165375000,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Belum Kontrak","keterangan":""},
-    {"no":4,"kro":"052","uraian":"Pengadaan/Penggantian Gordyn Rumah Negara","pagu":276213000,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Belum Kontrak","keterangan":""},
-    {"no":5,"kro":"052","uraian":"Pengendalian Anti Rayap di Rumah Jabatan Pejabat Negara","pagu":581568000,"penawaran":121475000,"kontrak":121475000,"real_tw1":121208000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Proses Bayar","keterangan":""},
-    {"no":6,"kro":"052","uraian":"Pemeliharaan Bangunan & Halaman Rumah Negara (99.811 mÂ²)","pagu":7072039000,"penawaran":3534049839,"kontrak":2921446000,"real_tw1":2828343000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Proses Bayar","keterangan":""},
-    {"no":7,"kro":"052","uraian":"ME Widya Chandra, Kuningan, Kemang, Perdatam, Slipi, Kemayoran","pagu":4848542000,"penawaran":4865306000,"kontrak":4746697000,"real_tw1":4624109879,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Proses Bayar","keterangan":""},
-    {"no":8,"kro":"053","uraian":"Review Desain & Pengawasan Pool Kendaraan VVIP","pagu":897047000,"penawaran":897590400,"kontrak":897047000,"real_tw1":888421800,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Proses Bayar","keterangan":""},
-    {"no":9,"kro":"053","uraian":"Pengadaan/Penggantian AC Split Rumah Negara (31 unit)","pagu":319362000,"penawaran":51048000,"kontrak":51048000,"real_tw1":50500000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Proses Bayar","keterangan":""},
-    {"no":10,"kro":"053","uraian":"Pengadaan/Penggantian APAR di RJPN Kemensetneg","pagu":298011000,"penawaran":0,"kontrak":298011000,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"[K] Terkontrak","keterangan":"Terkontrak â menunggu pembayaran"},
-    {"no":11,"kro":"053","uraian":"Pengadaan Peralatan ME Lengkap di Rumah Negara (60 unit)","pagu":765668000,"penawaran":11710000,"kontrak":10467000,"real_tw1":10233000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Proses Bayar","keterangan":"Pompa, Exhaust, Water heater, Filter air"},
-    {"no":12,"kro":"053","uraian":"Pengadaan/Penggantian Furniture RJPN dan Kelengkapannya","pagu":906800000,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Belum Kontrak","keterangan":""},
-    {"no":13,"kro":"EBA","uraian":"Pengadaan/Penggantian Alat-Alat Listrik Gedung Kantor","pagu":165375000,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Belum Kontrak","keterangan":""},
-    {"no":14,"kro":"EBA","uraian":"Pemeliharaan Halaman dan Gedung Kantor Kemensetneg (96.960 mÂ²)","pagu":18673111000,"penawaran":4277790462,"kontrak":2832226000,"real_tw1":2492053000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Proses Bayar","keterangan":""},
-    {"no":15,"kro":"EBA","uraian":"Pemeliharaan Mekanikal dan Elektrikal Gedung dan Bangunan","pagu":10340791000,"penawaran":8410632000,"kontrak":8680393000,"real_tw1":8156980353,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Proses Bayar","keterangan":""},
-    {"no":16,"kro":"EBB","uraian":"Pengadaan Peralatan ME Gedung Kantor Kemensetneg (25 unit)","pagu":256951800,"penawaran":69487000,"kontrak":80310000,"real_tw1":76985000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Proses Bayar","keterangan":""},
-    {"no":17,"kro":"EBB","uraian":"Pengadaan/Penggantian AC Split (12 unit)","pagu":109080000,"penawaran":0,"kontrak":38270000,"real_tw1":38300000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Selesai","keterangan":""},
-    {"no":18,"kro":"EBB","uraian":"Pengadaan/Penggantian APAR di Gedung Kantor","pagu":189802800,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Belum Kontrak","keterangan":""},
-    {"no":19,"kro":"EBB","uraian":"Pengadaan/Penggantian Blind Gedung Kantor","pagu":131325000,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Belum Kontrak","keterangan":""},
-    {"no":20,"kro":"EBB","uraian":"Perencanaan Gedung Kantor di Lingkungan Kemensetneg","pagu":200000000,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Belum Kontrak","keterangan":""},
-    {"no":21,"kro":"EBB","uraian":"Pengadaan/Penggantian AC Gedung Kantor","pagu":1472335000,"penawaran":1924234000,"kontrak":1235200000,"real_tw1":1235000000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Proses Bayar","keterangan":""},
-    {"no":22,"kro":"EBB","uraian":"Pengadaan/Penggantian Furniture Gedung Kantor","pagu":5414370000,"penawaran":872806000,"kontrak":872806000,"real_tw1":920215000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"â Selesai","keterangan":""},
+    {"no":1,"kro":"051","uraian":"Pemeliharaan Gedung Hanggar (Skadron 45 & VVIP) Halim","pagu":1223284000,"penawaran":51542000,"kontrak":47348000,"real_tw1":47084000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"↗ Proses Bayar","keterangan":""},
+    {"no":2,"kro":"051","uraian":"Peralatan ME Hanggar Pesawat Kepresidenan RI Halim","pagu":1519468000,"penawaran":734565000,"kontrak":734565000,"real_tw1":718678003,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"↗ Proses Bayar","keterangan":""},
+    {"no":3,"kro":"052","uraian":"Pengadaan/Penggantian Alat-Alat Listrik Rumah Negara","pagu":165375000,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"○ Belum Kontrak","keterangan":""},
+    {"no":4,"kro":"052","uraian":"Pengadaan/Penggantian Gordyn Rumah Negara","pagu":276213000,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"○ Belum Kontrak","keterangan":""},
+    {"no":5,"kro":"052","uraian":"Pengendalian Anti Rayap di Rumah Jabatan Pejabat Negara","pagu":581568000,"penawaran":121475000,"kontrak":121475000,"real_tw1":121208000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"↗ Proses Bayar","keterangan":""},
+    {"no":6,"kro":"052","uraian":"Pemeliharaan Bangunan & Halaman Rumah Negara (99.811 m²)","pagu":7072039000,"penawaran":3534049839,"kontrak":2921446000,"real_tw1":2828343000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"↗ Proses Bayar","keterangan":""},
+    {"no":7,"kro":"052","uraian":"ME Widya Chandra, Kuningan, Kemang, Perdatam, Slipi, Kemayoran","pagu":4848542000,"penawaran":4865306000,"kontrak":4746697000,"real_tw1":4624109879,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"↗ Proses Bayar","keterangan":""},
+    {"no":8,"kro":"053","uraian":"Review Desain & Pengawasan Pool Kendaraan VVIP","pagu":897047000,"penawaran":897590400,"kontrak":897047000,"real_tw1":888421800,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"↗ Proses Bayar","keterangan":""},
+    {"no":9,"kro":"053","uraian":"Pengadaan/Penggantian AC Split Rumah Negara (31 unit)","pagu":319362000,"penawaran":51048000,"kontrak":51048000,"real_tw1":50500000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"↗ Proses Bayar","keterangan":""},
+    {"no":10,"kro":"053","uraian":"Pengadaan/Penggantian APAR di RJPN Kemensetneg","pagu":298011000,"penawaran":0,"kontrak":298011000,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"[K] Terkontrak","keterangan":"Terkontrak – menunggu pembayaran"},
+    {"no":11,"kro":"053","uraian":"Pengadaan Peralatan ME Lengkap di Rumah Negara (60 unit)","pagu":765668000,"penawaran":11710000,"kontrak":10467000,"real_tw1":10233000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"↗ Proses Bayar","keterangan":"Pompa, Exhaust, Water heater, Filter air"},
+    {"no":12,"kro":"053","uraian":"Pengadaan/Penggantian Furniture RJPN dan Kelengkapannya","pagu":906800000,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"○ Belum Kontrak","keterangan":""},
+    {"no":13,"kro":"EBA","uraian":"Pengadaan/Penggantian Alat-Alat Listrik Gedung Kantor","pagu":165375000,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"○ Belum Kontrak","keterangan":""},
+    {"no":14,"kro":"EBA","uraian":"Pemeliharaan Halaman dan Gedung Kantor Kemensetneg (96.960 m²)","pagu":18673111000,"penawaran":4277790462,"kontrak":2832226000,"real_tw1":2492053000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"↗ Proses Bayar","keterangan":""},
+    {"no":15,"kro":"EBA","uraian":"Pemeliharaan Mekanikal dan Elektrikal Gedung dan Bangunan","pagu":10340791000,"penawaran":8410632000,"kontrak":8680393000,"real_tw1":8156980353,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"↗ Proses Bayar","keterangan":""},
+    {"no":16,"kro":"EBB","uraian":"Pengadaan Peralatan ME Gedung Kantor Kemensetneg (25 unit)","pagu":256951800,"penawaran":69487000,"kontrak":80310000,"real_tw1":76985000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"↗ Proses Bayar","keterangan":""},
+    {"no":17,"kro":"EBB","uraian":"Pengadaan/Penggantian AC Split (12 unit)","pagu":109080000,"penawaran":0,"kontrak":38270000,"real_tw1":38300000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"✓ Selesai","keterangan":""},
+    {"no":18,"kro":"EBB","uraian":"Pengadaan/Penggantian APAR di Gedung Kantor","pagu":189802800,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"○ Belum Kontrak","keterangan":""},
+    {"no":19,"kro":"EBB","uraian":"Pengadaan/Penggantian Blind Gedung Kantor","pagu":131325000,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"○ Belum Kontrak","keterangan":""},
+    {"no":20,"kro":"EBB","uraian":"Perencanaan Gedung Kantor di Lingkungan Kemensetneg","pagu":200000000,"penawaran":0,"kontrak":0,"real_tw1":0,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"○ Belum Kontrak","keterangan":""},
+    {"no":21,"kro":"EBB","uraian":"Pengadaan/Penggantian AC Gedung Kantor","pagu":1472335000,"penawaran":1924234000,"kontrak":1235200000,"real_tw1":1235000000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"↗ Proses Bayar","keterangan":""},
+    {"no":22,"kro":"EBB","uraian":"Pengadaan/Penggantian Furniture Gedung Kantor","pagu":5414370000,"penawaran":872806000,"kontrak":872806000,"real_tw1":920215000,"real_tw2":0,"real_tw3":0,"real_tw4":0,"status":"✓ Selesai","keterangan":""},
 ]
 
 DEFAULT_PEKERJAAN = [
@@ -344,11 +344,11 @@ def load_data():
         pekerjaan  = sheets_to_pekerjaan(pek_records)  if pek_records        else DEFAULT_PEKERJAAN
         users      = sheets_to_users(user_records)     if user_records       else DEFAULT_USERS
 
-        last_update = "â"
+        last_update = "–"
         update_by   = "Sistem"
         if meta_records:
             meta_dict = {r["key"]: r["value"] for r in meta_records if "key" in r}
-            last_update = meta_dict.get("last_update", "â")
+            last_update = meta_dict.get("last_update", "–")
             update_by   = meta_dict.get("update_by",   "Sistem")
 
         # Jika Sheets masih kosong (baru pertama kali), isi dengan data default
@@ -423,9 +423,9 @@ def save_data(data):
         with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 # HELPER FUNCTIONS
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 def fmt_rp(val):
     if val is None: return "Rp 0"
     return f"Rp {val:,.0f}".replace(",", ".")
@@ -443,26 +443,26 @@ def fmt_pct(val):
 
 def status_badge(status):
     if "SELESAI" in str(status) or "Selesai" in str(status):
-        return f'<span class="badge-selesai">â {status}</span>'
+        return f'<span class="badge-selesai">✓ {status}</span>'
     elif "Proses" in str(status) or "Terkontrak" in str(status):
-        return f'<span class="badge-proses">â {status}</span>'
+        return f'<span class="badge-proses">↗ {status}</span>'
     else:
-        return f'<span class="badge-belum">â {status}</span>'
+        return f'<span class="badge-belum">○ {status}</span>'
 
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 # AUTENTIKASI
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 def login_page(data):
     st.markdown("""
     <div class="main-header">
-        <h1>ðï¸ Dashboard Terpadu Bangunan</h1>
-        <p>Bagian Bangunan Â· Biro Umum Â· Kementerian Sekretariat Negara Â· TA 2026</p>
+        <h1>🏛️ Dashboard Terpadu Bangunan</h1>
+        <p>Bagian Bangunan · Biro Umum · Kementerian Sekretariat Negara · TA 2026</p>
     </div>
     """, unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 1.2, 1])
     with col2:
-        st.markdown("### ð Login")
+        st.markdown("### 🔐 Login")
         with st.form("login_form"):
             username = st.text_input("Username", placeholder="Masukkan username")
             password = st.text_input("Password", type="password", placeholder="Masukkan password")
@@ -485,15 +485,15 @@ def login_page(data):
         st.markdown("""
         <div class="info-box">
             <b>Akun Demo:</b><br>
-            ð Admin: <code>admin</code> / <code>bangunan2026</code><br>
-            âï¸ Staf: <code>staf</code> / <code>staf2026</code><br>
-            ðï¸ Viewer: <code>viewer</code> / <code>viewer2026</code>
+            👑 Admin: <code>admin</code> / <code>bangunan2026</code><br>
+            ✏️ Staf: <code>staf</code> / <code>staf2026</code><br>
+            👁️ Viewer: <code>viewer</code> / <code>viewer2026</code>
         </div>
         """, unsafe_allow_html=True)
 
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 # HALAMAN: RINGKASAN EKSEKUTIF
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 def page_ringkasan(data):
     mak = data["mak"]
     pekerjaan = data["pekerjaan"]
@@ -513,8 +513,8 @@ def page_ringkasan(data):
     # Header
     st.markdown("""
     <div class="main-header">
-        <h1>ðï¸ Dashboard Terpadu Bangunan</h1>
-        <p>Bagian Bangunan Â· Biro Umum Â· Kementerian Sekretariat Negara Â· TA 2026</p>
+        <h1>🏛️ Dashboard Terpadu Bangunan</h1>
+        <p>Bagian Bangunan · Biro Umum · Kementerian Sekretariat Negara · TA 2026</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -525,18 +525,18 @@ def page_ringkasan(data):
     except:
         update_str = last_update
 
-    st.caption(f"Update terakhir: {update_str} Â· Diperbarui oleh: {data.get('update_by', 'Sistem')}")
+    st.caption(f"Update terakhir: {update_str} · Diperbarui oleh: {data.get('update_by', 'Sistem')}")
     st.markdown("---")
 
-    # ââ KPI ROW ââ
-    st.markdown("#### ð Ringkasan Anggaran")
+    # ── KPI ROW ──
+    st.markdown("#### 📊 Ringkasan Anggaran")
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         st.markdown(f"""
         <div class="kpi-card">
             <div class="label">Total Pagu Bangunan</div>
             <div class="value">{fmt_rp_short(total_pagu)}</div>
-            <div class="sub">TA 2026 Â· Revisi 3 POK DIPA</div>
+            <div class="sub">TA 2026 · Revisi 3 POK DIPA</div>
         </div>""", unsafe_allow_html=True)
     with c2:
         st.markdown(f"""
@@ -562,7 +562,7 @@ def page_ringkasan(data):
         </div>""", unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("#### ð¨ Ringkasan Pekerjaan")
+    st.markdown("#### 🔨 Ringkasan Pekerjaan")
     c5, c6, c7, c8 = st.columns(4)
     with c5:
         st.markdown(f"""
@@ -598,11 +598,11 @@ def page_ringkasan(data):
 
     st.markdown("---")
 
-    # ââ CHARTS ââ
+    # ── CHARTS ──
     col_left, col_right = st.columns(2)
 
     with col_left:
-        st.markdown("#### ð Realisasi Anggaran per KRO")
+        st.markdown("#### 📈 Realisasi Anggaran per KRO")
         kro_data = {}
         for m in mak:
             kro = m["kro"]
@@ -632,7 +632,7 @@ def page_ringkasan(data):
         st.plotly_chart(fig, use_container_width=True)
 
     with col_right:
-        st.markdown("#### ð¢ Status Pekerjaan")
+        st.markdown("#### 🟢 Status Pekerjaan")
         status_counts = {}
         for p in pekerjaan:
             s = p["status"]
@@ -656,9 +656,9 @@ def page_ringkasan(data):
         fig2.update_traces(textinfo="percent+value")
         st.plotly_chart(fig2, use_container_width=True)
 
-    # ââ TABEL RINGKASAN KRO ââ
+    # ── TABEL RINGKASAN KRO ──
     st.markdown("---")
-    st.markdown("#### ð Ringkasan per KRO")
+    st.markdown("#### 📋 Ringkasan per KRO")
     rows_kro = []
     for kro_id, kro_info in ANGGARAN_KRO.items():
         kro_mak = [m for m in mak if m["kro"] == kro_id]
@@ -678,14 +678,14 @@ def page_ringkasan(data):
     st.dataframe(df_kro_tbl, use_container_width=True, hide_index=True)
 
 
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 # HALAMAN: DASHBOARD ANGGARAN
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 def page_anggaran(data):
     mak = data["mak"]
 
-    st.markdown("## ð° Dashboard Anggaran MAK")
-    st.caption("Monitoring realisasi anggaran per item MAK Â· TA 2026")
+    st.markdown("## 💰 Dashboard Anggaran MAK")
+    st.caption("Monitoring realisasi anggaran per item MAK · TA 2026")
 
     # Filter KRO
     kros = ["Semua"] + sorted(set(m["kro"] for m in mak))
@@ -742,11 +742,11 @@ def page_anggaran(data):
     df = pd.DataFrame(rows)
 
     def color_status(val):
-        if "Selesai" in str(val) or "â" in str(val):
+        if "Selesai" in str(val) or "✓" in str(val):
             return "background-color: #d4edda"
         elif "Proses" in str(val) or "Terkontrak" in str(val):
             return "background-color: #fff3cd"
-        elif "Belum" in str(val) or "â" in str(val):
+        elif "Belum" in str(val) or "○" in str(val):
             return "background-color: #f8d7da"
         return ""
 
@@ -755,7 +755,7 @@ def page_anggaran(data):
 
     # Chart realisasi per item
     st.markdown("---")
-    st.markdown("#### ð Perbandingan Pagu vs Realisasi (Top 10)")
+    st.markdown("#### 📊 Perbandingan Pagu vs Realisasi (Top 10)")
     df_chart = pd.DataFrame([{
         "Uraian": m["uraian"][:40] + "..." if len(m["uraian"]) > 40 else m["uraian"],
         "Pagu": m["pagu"] / 1e9,
@@ -773,14 +773,14 @@ def page_anggaran(data):
     st.plotly_chart(fig, use_container_width=True)
 
 
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 # HALAMAN: MONITORING PENGAWASAN
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 def page_pengawasan(data):
     pekerjaan = data["pekerjaan"]
 
-    st.markdown("## ð¨ Monitoring Pengawasan Pekerjaan")
-    st.caption("Status administrasi pekerjaan Â· Subbag Pengawasan Bagian Bangunan Â· TA 2026")
+    st.markdown("## 🔨 Monitoring Pengawasan Pekerjaan")
+    st.caption("Status administrasi pekerjaan · Subbag Pengawasan Bagian Bangunan · TA 2026")
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -801,7 +801,7 @@ def page_pengawasan(data):
 
     # Progres checklist
     st.markdown("---")
-    st.markdown("#### â Progres Checklist Administrasi")
+    st.markdown("#### ✅ Progres Checklist Administrasi")
     cc1, cc2, cc3, cc4, cc5 = st.columns(5)
     total_f = len(filtered) if filtered else 1
     items_check = [
@@ -823,7 +823,7 @@ def page_pengawasan(data):
     # Tabel pekerjaan
     rows = []
     for p in filtered:
-        def ck(val): return "â" if val == 1 else "â"
+        def ck(val): return "✓" if val == 1 else "✗"
         rows.append({
             "No": p["no"],
             "Klp": p["klp"],
@@ -858,7 +858,7 @@ def page_pengawasan(data):
 
     # Chart status
     st.markdown("---")
-    st.markdown("#### ð Distribusi Status Pekerjaan")
+    st.markdown("#### 📊 Distribusi Status Pekerjaan")
     status_counts = {}
     for p in filtered:
         s = p["status"]
@@ -875,11 +875,11 @@ def page_pengawasan(data):
         st.plotly_chart(fig, use_container_width=True)
 
 
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 # HALAMAN: INPUT ANGGARAN
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 def page_input_anggaran(data):
-    st.markdown("## âï¸ Update Realisasi Anggaran")
+    st.markdown("## ✏️ Update Realisasi Anggaran")
     st.info("Pilih item MAK dan update nilai realisasi per triwulan. Data tersimpan otomatis.")
 
     mak = data["mak"]
@@ -910,7 +910,7 @@ def page_input_anggaran(data):
         new_real_tw4 = st.number_input("Realisasi TW IV (Rp)", value=float(item.get("real_tw4", 0)),
                                         min_value=0.0, step=1000000.0, format="%.0f")
 
-    status_options = ["â Belum Kontrak", "[K] Terkontrak", "â Proses Bayar", "â Selesai"]
+    status_options = ["○ Belum Kontrak", "[K] Terkontrak", "↗ Proses Bayar", "✓ Selesai"]
     new_status = st.selectbox("Status:", status_options,
                                index=status_options.index(item["status"]) if item["status"] in status_options else 0)
     new_ket = st.text_input("Keterangan:", value=item.get("keterangan", ""))
@@ -919,7 +919,7 @@ def page_input_anggaran(data):
     pct = total_real / item["pagu"] * 100 if item["pagu"] > 0 else 0
     st.info(f"Total Realisasi: **{fmt_rp(int(total_real))}** ({pct:.1f}% dari pagu)")
 
-    if st.button("ð¾ Simpan Perubahan", type="primary", use_container_width=True):
+    if st.button("💾 Simpan Perubahan", type="primary", use_container_width=True):
         mak[idx].update({
             "penawaran": int(new_penawaran),
             "kontrak": int(new_kontrak),
@@ -933,15 +933,15 @@ def page_input_anggaran(data):
         data["mak"] = mak
         data["update_by"] = st.session_state.get("nama", "Staf")
         save_data(data)
-        st.success("â Data berhasil disimpan!")
+        st.success("✅ Data berhasil disimpan!")
         st.rerun()
 
 
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 # HALAMAN: INPUT PEKERJAAN
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 def page_input_pekerjaan(data):
-    st.markdown("## âï¸ Update Status Pekerjaan")
+    st.markdown("## ✏️ Update Status Pekerjaan")
     st.info("Update status administrasi pekerjaan. Gunakan tab Tambah untuk menambah pekerjaan baru.")
 
     pekerjaan = data["pekerjaan"]
@@ -985,7 +985,7 @@ def page_input_pekerjaan(data):
         new_ket = st.text_input("Keterangan:", value=item.get("keterangan", ""))
         new_pic = st.text_input("PIC:", value=item.get("pic", "Subbag Pengawasan"))
 
-        if st.button("ð¾ Simpan", type="primary", use_container_width=True):
+        if st.button("💾 Simpan", type="primary", use_container_width=True):
             pekerjaan[idx].update({
                 "ceklist": int(new_ceklist),
                 "upload_draft": int(new_draft),
@@ -999,7 +999,7 @@ def page_input_pekerjaan(data):
             data["pekerjaan"] = pekerjaan
             data["update_by"] = st.session_state.get("nama", "Staf")
             save_data(data)
-            st.success("â Status pekerjaan berhasil diperbarui!")
+            st.success("✅ Status pekerjaan berhasil diperbarui!")
             st.rerun()
 
     with tab2:
@@ -1018,7 +1018,7 @@ def page_input_pekerjaan(data):
                 t_tgl_adm = st.date_input("Tgl ADM:", value=date.today())
 
             t_ket = st.text_input("Keterangan:")
-            submitted = st.form_submit_button("â Tambah Pekerjaan", use_container_width=True)
+            submitted = st.form_submit_button("➕ Tambah Pekerjaan", use_container_width=True)
 
             if submitted:
                 if not t_nama.strip():
@@ -1039,15 +1039,15 @@ def page_input_pekerjaan(data):
                     data["pekerjaan"] = pekerjaan
                     data["update_by"] = st.session_state.get("nama", "Staf")
                     save_data(data)
-                    st.success(f"â Pekerjaan '{t_nama}' berhasil ditambahkan!")
+                    st.success(f"✅ Pekerjaan '{t_nama}' berhasil ditambahkan!")
                     st.rerun()
 
 
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 # HALAMAN: MANAJEMEN USER (ADMIN ONLY)
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 def page_admin(data):
-    st.markdown("## âï¸ Manajemen Pengguna")
+    st.markdown("## ⚙️ Manajemen Pengguna")
     st.warning("Halaman ini hanya untuk Admin.")
 
     users = data.get("users", DEFAULT_USERS)
@@ -1082,13 +1082,13 @@ def page_admin(data):
                 }
                 data["users"] = users
                 save_data(data)
-                st.success(f"â User '{new_username}' berhasil disimpan!")
+                st.success(f"✅ User '{new_username}' berhasil disimpan!")
                 st.rerun()
 
 
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 # MAIN APP
-# âââââââââââââââââââââââââââââââââââââââââââââ
+# ─────────────────────────────────────────────
 def main():
     data = load_data()
 
@@ -1113,17 +1113,17 @@ def main():
         </div>
         """, unsafe_allow_html=True)
 
-        st.markdown("### ðï¸ Menu")
+        st.markdown("### 🗂️ Menu")
         pages = {
-            "ð  Ringkasan Eksekutif": "ringkasan",
-            "ð° Dashboard Anggaran": "anggaran",
-            "ð¨ Monitoring Pengawasan": "pengawasan",
+            "🏠 Ringkasan Eksekutif": "ringkasan",
+            "💰 Dashboard Anggaran": "anggaran",
+            "🔨 Monitoring Pengawasan": "pengawasan",
         }
         if role in ["Admin", "Staf"]:
-            pages["âï¸ Input Anggaran"] = "input_anggaran"
-            pages["âï¸ Input Pekerjaan"] = "input_pekerjaan"
+            pages["✏️ Input Anggaran"] = "input_anggaran"
+            pages["✏️ Input Pekerjaan"] = "input_pekerjaan"
         if role == "Admin":
-            pages["âï¸ Manajemen User"] = "admin"
+            pages["⚙️ Manajemen User"] = "admin"
 
         if "current_page" not in st.session_state:
             st.session_state["current_page"] = "ringkasan"
@@ -1148,13 +1148,13 @@ def main():
         # Indikator sumber data
         source = data.get("_source", "local")
         if source == "sheets":
-            st.markdown("<small>ð¾ Database: <b>Google Sheets</b> â</small>", unsafe_allow_html=True)
+            st.markdown("<small>💾 Database: <b>Google Sheets</b> ✅</small>", unsafe_allow_html=True)
         else:
-            st.markdown("<small>ð¾ Database: <b>Lokal</b> â ï¸<br>Tambahkan Secrets untuk Google Sheets</small>",
+            st.markdown("<small>💾 Database: <b>Lokal</b> ⚠️<br>Tambahkan Secrets untuk Google Sheets</small>",
                         unsafe_allow_html=True)
 
         st.markdown("---")
-        if st.button("ðª Keluar", use_container_width=True):
+        if st.button("🚪 Keluar", use_container_width=True):
             st.session_state.clear()
             st.rerun()
 
